@@ -1,21 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { Observable } from 'rxjs';
 
-/**
- * HeaderComponent: Modern, responsive navigation header
- * Features:
- * - Logo/brand with icon
- * - Navigation menu with active state highlighting
- * - Compact search bar
- * - Login/Logout button with auth state
- * - Mobile hamburger menu (sticky header)
- * - Dark mode support
- * - Smooth transitions and hover effects
- */
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -29,28 +19,33 @@ export class HeaderComponent implements OnInit {
   searchQuery = '';
   isDarkMode = false;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, @Inject(PLATFORM_ID) private platformId: Object) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
-    this.initializeDarkMode();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initializeDarkMode();
+  }
 
   /**
    * Initialize dark mode preference from localStorage or system
    */
   private initializeDarkMode(): void {
-    // Check if localStorage is available (not SSR environment)
-    if (typeof localStorage === 'undefined') {
+    if (!isPlatformBrowser(this.platformId)) {
+      // SSR: Browser APIs not available
       this.isDarkMode = false;
-    } else {
-      const savedMode = localStorage.getItem('darkMode');
-      if (savedMode !== null) {
-        this.isDarkMode = JSON.parse(savedMode);
-      } else {
-        this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      }
+      return;
     }
+
+    // Safe browser-only code
+    const savedMode = localStorage.getItem('darkMode');
+
+    if (savedMode !== null) {
+      this.isDarkMode = JSON.parse(savedMode);
+    } else {
+      this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
     this.applyDarkMode();
   }
 
@@ -59,66 +54,51 @@ export class HeaderComponent implements OnInit {
    */
   toggleDarkMode(): void {
     this.isDarkMode = !this.isDarkMode;
-    // Check if localStorage is available (not SSR environment)
-    if (typeof localStorage !== 'undefined') {
+
+    if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('darkMode', JSON.stringify(this.isDarkMode));
+      this.applyDarkMode();
     }
-    this.applyDarkMode();
   }
 
   /**
    * Apply dark mode classes to document
    */
   private applyDarkMode(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const root = document.documentElement;
+
     if (this.isDarkMode) {
-      document.documentElement.classList.add('dark-mode');
+      root.classList.add('dark-mode');
     } else {
-      document.documentElement.classList.remove('dark-mode');
+      root.classList.remove('dark-mode');
     }
   }
 
-  /**
-   * Toggle mobile menu visibility
-   */
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
-  /**
-   * Close mobile menu
-   */
   closeMobileMenu(): void {
     this.mobileMenuOpen = false;
   }
 
-  /**
-   * Handle search query
-   */
   handleSearch(): void {
     if (this.searchQuery.trim()) {
       console.log('Search for:', this.searchQuery);
-      // TODO: Dispatch search action or navigate to search results
     }
   }
 
-  /**
-   * Clear search
-   */
   clearSearch(): void {
     this.searchQuery = '';
   }
 
-  /**
-   * Trigger login
-   */
   onLogin(): void {
     this.authService.login();
     this.closeMobileMenu();
   }
 
-  /**
-   * Trigger logout
-   */
   onLogout(): void {
     this.authService.logout();
     this.closeMobileMenu();
