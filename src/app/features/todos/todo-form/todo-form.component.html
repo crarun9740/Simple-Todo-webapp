@@ -1,0 +1,42 @@
+<form (ngSubmit)="onSubmit($event)" class="todo-form" novalidate>
+  <div class="form-group">
+    <label for="title" class="form-label">Title *</label>
+    <input
+      id="title"
+      type="text"
+      [(ngModel)]="title"
+      name="title"
+      class="form-input"
+      placeholder="What needs to be done?"
+      required
+      maxlength="100"
+      aria-required="true"
+    />
+    <div *ngIf="showErrors && !title.trim()" class="error-message" role="alert">
+      Title is required
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="description" class="form-label">Description (optional)</label>
+    <textarea
+      id="description"
+      [(ngModel)]="description"
+      name="description"
+      class="form-input form-textarea"
+      placeholder="Add more details..."
+      maxlength="500"
+      rows="3"
+      aria-label="Todo description"
+    ></textarea>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary" aria-label="Submit form">
+      {{ todo ? 'Update' : 'Create' }}
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="onCancel()" aria-label="Cancel">
+      Cancel
+    </button>
+  </div>
+</form>

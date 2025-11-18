@@ -1,0 +1,189 @@
+/* Todo Item Styles */
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem; /* 16px */
+  background-color: #ffffff;
+  border: 1px solid #e6e9f2;
+  border-radius: 0.5rem; /* 8px */
+  gap: 1rem; /* 16px */
+  transition: all 0.2s ease-in-out;
+}
+
+.todo-item:hover {
+  box-shadow: 0 2px 8px rgba(11, 18, 32, 0.08);
+  border-color: #d0d4e0;
+}
+
+.todo-item--completed {
+  background-color: #f9fafb;
+  opacity: 0.7;
+}
+
+.todo-item__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem; /* 16px */
+  flex: 1;
+  min-width: 0;
+}
+
+.todo-item__checkbox {
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
+  margin-top: 0.25rem; /* 4px */
+  cursor: pointer;
+  accent-color: #0f6fff;
+  flex-shrink: 0;
+}
+
+.todo-item__checkbox:focus {
+  outline: 2px solid #0f6fff;
+  outline-offset: 2px;
+}
+
+.todo-item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.todo-item__title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  color: #0b1220;
+  word-break: break-word;
+  transition: text-decoration 0.15s ease;
+}
+
+.todo-item--completed .todo-item__title {
+  text-decoration: line-through;
+  color: #556075;
+}
+
+.todo-item__description {
+  margin: 0.5rem 0 0.25rem 0;
+  font-size: 0.875rem; /* 14px */
+  color: #556075;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.todo-item__meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem; /* 12px */
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.todo-item__actions {
+  display: flex;
+  gap: 0.5rem; /* 8px */
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem; /* 32px */
+  height: 2rem; /* 32px */
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0.375rem; /* 6px */
+  background-color: #f5f7fb;
+  color: #556075;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  font-size: 1rem;
+}
+
+.btn-icon:hover {
+  background-color: #e6e9f2;
+  color: #0b1220;
+}
+
+.btn-icon:focus {
+  outline: 2px solid #0f6fff;
+  outline-offset: 1px;
+}
+
+.btn-icon--danger:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+/* Delete Confirmation Styles */
+.delete-confirm {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-confirm__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(11, 18, 32, 0.5);
+  cursor: pointer;
+}
+
+.delete-confirm__dialog {
+  position: relative;
+  z-index: 10;
+  background-color: #ffffff;
+  border-radius: 0.75rem; /* 12px */
+  padding: 1.5rem; /* 24px */
+  box-shadow: 0 10px 40px rgba(11, 18, 32, 0.15);
+  max-width: 24rem; /* 384px */
+  width: calc(100% - 2rem);
+}
+
+.delete-confirm__title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem; /* 18px */
+  font-weight: 700;
+  color: #0b1220;
+}
+
+.delete-confirm__text {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem; /* 14px */
+  color: #556075;
+}
+
+.delete-confirm__actions {
+  display: flex;
+  gap: 1rem; /* 16px */
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .todo-item {
+    flex-wrap: wrap;
+  }
+
+  .todo-item__main {
+    width: 100%;
+    order: 1;
+  }
+
+  .todo-item__actions {
+    width: 100%;
+    order: 2;
+  }
+
+  .delete-confirm__dialog {
+    width: 90vw;
+    max-width: none;
+  }
+}

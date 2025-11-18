@@ -1,0 +1,64 @@
+<div class="todo-item" [class.todo-item--completed]="todo.completed">
+  <div class="todo-item__main">
+    <input
+      type="checkbox"
+      class="todo-item__checkbox"
+      [checked]="todo.completed"
+      (change)="onToggle()"
+      [attr.aria-label]="'Toggle: ' + todo.title"
+    />
+    <div class="todo-item__content">
+      <h3 class="todo-item__title">{{ todo.title }}</h3>
+      <p *ngIf="todo.description" class="todo-item__description">
+        {{ todo.description }}
+      </p>
+      <p class="todo-item__meta">
+        Created: {{ getFormattedDate(todo.createdAt) }}
+      </p>
+    </div>
+  </div>
+
+  <div class="todo-item__actions">
+    <button
+      class="btn-icon"
+      (click)="onEdit()"
+      aria-label="Edit todo"
+      title="Edit"
+    >
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path
+          d="M2 14.5V16.5H4L13.5 7L11.5 5L2 14.5Z"
+          fill="currentColor"
+        />
+        <path d="M14.5 4L16.5 2L14.5 0" stroke="currentColor" stroke-width="2" />
+      </svg>
+    </button>
+    <button
+      class="btn-icon btn-icon--danger"
+      (click)="onDeleteClick()"
+      aria-label="Delete todo"
+      title="Delete"
+    >
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M2 4H4H16M7 7V13M11 7V13M13 4V2.5C13 2.22386 12.7761 2 12.5 2H5.5C5.22386 2 5 2.22386 5 2.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteConfirm" class="delete-confirm">
+    <div class="delete-confirm__overlay" (click)="onCancelDelete()"></div>
+    <div class="delete-confirm__dialog" role="alertdialog" aria-modal="true">
+      <h4 class="delete-confirm__title">Delete Todo?</h4>
+      <p class="delete-confirm__text">This action cannot be undone.</p>
+      <div class="delete-confirm__actions">
+        <button class="btn btn-danger" (click)="onConfirmDelete()">
+          Delete
+        </button>
+        <button class="btn btn-secondary" (click)="onCancelDelete()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

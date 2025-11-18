@@ -1,0 +1,68 @@
+/* Form Styles */
+.todo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* 24px */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* 8px */
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.875rem; /* 14px */
+  color: #0b1220;
+  letter-spacing: 0.3px;
+}
+
+.form-input {
+  padding: 0.75rem 1rem; /* 12px 16px */
+  border: 1px solid #e6e9f2;
+  border-radius: 0.375rem; /* 6px */
+  font-size: 1rem; /* 16px */
+  font-family: 'Inter', sans-serif;
+  color: #0b1220;
+  background-color: #ffffff;
+  transition: all 0.15s ease-in-out;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0f6fff;
+  box-shadow: 0 0 0 3px rgba(15, 111, 255, 0.1);
+}
+
+.form-input::placeholder {
+  color: #556075;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 6rem; /* 96px */
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem; /* 16px */
+  margin-top: 0.5rem; /* 8px */
+}
+
+.error-message {
+  font-size: 0.875rem; /* 14px */
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}

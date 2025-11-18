@@ -1,0 +1,224 @@
+<main class="todo-page">
+  <div class="container">
+    <!-- Create/Edit Form -->
+    <section class="form-section card" *ngIf="showForm || editingTodo">
+      <h2 class="form-section__title">
+        {{ editingTodo ? 'Edit Todo' : 'Create New Todo' }}
+      </h2>
+      <app-todo-form
+        [todo]="editingTodo"
+        (submitted)="editingTodo ? onUpdateTodo($event) : onCreateTodo($event)"
+        (cancelled)="onCancelForm()"
+      ></app-todo-form>
+    </section>
+
+    <!-- Search & Filter Bar -->
+    <section class="controls-section card">
+      <div class="search-box">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search todos..."
+          [value]="searchQuery"
+          (input)="onSearchChange($event.target.value)"
+          aria-label="Search todos"
+        />
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path
+            d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path d="M19 19L14.65 14.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-select" class="label-text">Filter:</label>
+        <select
+          id="filter-select"
+          class="select-input"
+          (change)="setFilter($any($event.target).value)"
+          [value]="activeFilter"
+        >
+          <option [value]="TodoFilter.ALL">All</option>
+          <option [value]="TodoFilter.ACTIVE">Active</option>
+          <option [value]="TodoFilter.COMPLETED">Completed</option>
+        </select>
+      </div>
+
+      <div class="sort-group">
+        <label for="sort-select" class="label-text">Sort:</label>
+        <select
+          id="sort-select"
+          class="select-input"
+          (change)="setSort($any($event.target).value)"
+          [value]="activeSort"
+        >
+          <option [value]="TodoSort.CREATED">Created</option>
+          <option [value]="TodoSort.TITLE">Title (A-Z)</option>
+          <option [value]="TodoSort.STATUS">Status</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-section card" *ngIf="stats$ | async as stats">
+      <div class="stat-item">
+        <span class="stat-label">Total</span>
+        <span class="stat-value">{{ stats.total }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Active</span>
+        <span class="stat-value stat-value--active">{{ stats.active }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Completed</span>
+        <span class="stat-value stat-value--completed">{{ stats.completed }}</span>
+      </div>
+    </section>
+
+    <!-- Bulk Actions -->
+    <section class="bulk-actions-section card">
+      <button class="btn btn-secondary btn-sm" (click)="onToggleAll()" aria-label="Toggle all todos">
+        Toggle All
+      </button>
+      <button class="btn btn-secondary btn-sm" (click)="onClearCompleted()" aria-label="Clear completed todos">
+        Clear Completed
+      </button>
+      <button
+        class="btn btn-secondary btn-sm"
+        (click)="onExport()"
+        aria-label="Export todos as JSON"
+      >
+        Export
+      </button>
+      <button
+        class="btn btn-secondary btn-sm"
+        (click)="showImportModal = true"
+        aria-label="Import todos from JSON"
+      >
+        Import
+      </button>
+      <button class="btn btn-primary btn-sm" (click)="showForm = true" aria-label="Create new todo">
+        + New Todo
+      </button>
+    </section>
+
+    <!-- Todo List -->
+    <section class="todos-section">
+      <div *ngIf="(todos$ | async) as todos; else noTodos">
+        <div *ngIf="todos.length === 0; else hasTodos" class="empty-state">
+          <p class="empty-state__text">No todos yet. Create one to get started!</p>
+        </div>
+
+        <ng-template #hasTodos>
+          <ul class="todos-list" role="list">
+            <li *ngFor="let todo of todos" role="listitem">
+              <app-todo-item
+                [todo]="todo"
+                (toggled)="onToggleTodo($event)"
+                (edit)="onEditTodo($event)"
+                (delete)="onDeleteTodo($event)"
+              ></app-todo-item>
+            </li>
+          </ul>
+        </ng-template>
+      </div>
+
+      <ng-template #noTodos>
+        <div class="empty-state">
+          <p class="empty-state__text">Loading...</p>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+
+  <!-- Export Modal -->
+  <div *ngIf="showExportModal" class="modal-overlay" (click)="showExportModal = false">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Export Todos</h3>
+        <button
+          class="modal-close"
+          (click)="showExportModal = false"
+          aria-label="Close modal"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <textarea readonly class="export-textarea">{{ exportText }}</textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="copyToClipboard()">
+          Copy to Clipboard
+        </button>
+        <button class="btn btn-secondary" (click)="downloadExport()">
+          Download
+        </button>
+        <button class="btn btn-secondary" (click)="showExportModal = false">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div *ngIf="showImportModal" class="modal-overlay" (click)="showImportModal = false">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Import Todos</h3>
+        <button
+          class="modal-close"
+          (click)="showImportModal = false"
+          aria-label="Close modal"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="import-info">
+          Paste your exported JSON below or upload a file:
+        </p>
+        <textarea
+          class="import-textarea"
+          [(ngModel)]="importText"
+          placeholder="Paste JSON here..."
+          aria-label="Import JSON content"
+        ></textarea>
+
+        <div class="file-input-wrapper">
+          <label class="file-input-label">
+            Or upload a file:
+            <input
+              type="file"
+              accept=".json"
+              (change)="onImportFromFile($event)"
+              class="file-input"
+              aria-label="Import from file"
+            />
+          </label>
+        </div>
+
+        <div *ngIf="importError" class="error-message" role="alert">
+          {{ importError }}
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="onImport()">
+          Import
+        </button>
+        <button class="btn btn-secondary" (click)="showImportModal = false">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
